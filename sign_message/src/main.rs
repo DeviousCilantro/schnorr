@@ -1,17 +1,12 @@
-use rug::{Integer, rand};
+use rug::Integer;
+use ring::rand::{SystemRandom, SecureRandom};
 use std::io;
 use std::io::Write;
 use sha2::{Digest, Sha256};
 
 fn sign_message(sk: &Integer, message: &str, q: &Integer) -> (Integer, Integer) {
-    let mut rand = rand::RandState::new();
-    let mut k;
-    loop {
-        k = q.clone().random_below(&mut rand);
-        if k != *sk {
-            break;
-        };
-    };
+    let rand = SystemRandom::new();
+    let k = random_integer(&rand, q.clone());
     let r = Integer::from(2).pow_mod(&k, q).unwrap();
     let e = Integer::from_str_radix(&hash_message(&format!("{r}{message}")), 16).unwrap() % (q.clone() - Integer::from(1));
     let s = (k - e * sk.clone()) % (q - Integer::from(1));
@@ -22,6 +17,17 @@ fn hash_message(message: &str) -> String {
     let mut hasher = Sha256::new();
     hasher.update(message);
     format!("{:x}", hasher.finalize())
+}
+
+fn random_integer(rng: &SystemRandom, range: Integer) -> Integer {
+    loop {
+        let mut bytes = vec![0; ((range.significant_bits() + 7) / 8) as usize];
+        rng.fill(&mut bytes).unwrap();
+        let num = Integer::from_digits(&bytes, rug::integer::Order::Lsf);
+        if num < range {
+            return num;
+        }
+    }
 }
 
 fn main() {

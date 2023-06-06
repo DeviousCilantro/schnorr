@@ -86,6 +86,17 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a06f77d526c1a601b7c4cdd98f54b5eaabffc14d5f2f0296febdc7f357c6d3ba"
 
 [[package]]
+name = "generate_keypair"
+version = "0.1.0"
+dependencies = [
+ "base64",
+ "num-primes",
+ "rand 0.8.5",
+ "rug",
+ "sha2",
+]
+
+[[package]]
 name = "generic-array"
 version = "0.14.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -289,17 +300,6 @@ dependencies = [
  "az",
  "gmp-mpfr-sys",
  "libc",
-]
-
-[[package]]
-name = "schnorr"
-version = "0.1.0"
-dependencies = [
- "base64",
- "num-primes",
- "rand 0.8.5",
- "rug",
- "sha2",
 ]
 
 [[package]]
