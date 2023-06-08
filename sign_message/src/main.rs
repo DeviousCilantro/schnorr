@@ -2,7 +2,7 @@ use rug::Integer;
 use ring::rand::{SystemRandom, SecureRandom};
 use std::io;
 use std::io::Write;
-use sha2::{Digest, Sha256};
+use sha3::{Digest, Keccak256};
 
 fn sign_message(sk: &Integer, message: &str, q: &Integer) -> (Integer, Integer) {
     let rand = SystemRandom::new();
@@ -14,7 +14,7 @@ fn sign_message(sk: &Integer, message: &str, q: &Integer) -> (Integer, Integer) 
 }
 
 fn hash_message(message: &str) -> String {
-    let mut hasher = Sha256::new();
+    let mut hasher = Keccak256::new();
     hasher.update(message);
     format!("{:x}", hasher.finalize())
 }

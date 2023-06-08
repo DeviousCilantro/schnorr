@@ -1,9 +1,9 @@
 use rug::Integer;
 use std::io;
 use std::io::Write;
-use sha2::{Digest, Sha256};
+use sha3::{Digest, Keccak256};
 
-fn verify_message(pk: &Integer, message: &str, signature: (Integer, Integer), q: &Integer) {
+fn validate_signature(pk: &Integer, message: &str, signature: (Integer, Integer), q: &Integer) {
     let (r, s) = signature;
     let e = Integer::from_str_radix(&hash_message(&format!("{r}{message}")), 16).unwrap() % (q.clone() - Integer::from(1));
     let v = (Integer::from(2).pow_mod(&s, q).unwrap() * pk.clone().pow_mod(&e, q).unwrap()) % q;
@@ -12,7 +12,7 @@ fn verify_message(pk: &Integer, message: &str, signature: (Integer, Integer), q:
 }
 
 fn hash_message(message: &str) -> String {
-    let mut hasher = Sha256::new();
+    let mut hasher = Keccak256::new();
     hasher.update(message);
     format!("{:x}", hasher.finalize())
 }
@@ -63,6 +63,6 @@ fn main() {
     let input = input.as_str();
     let q = Integer::from_str_radix(input, 10).unwrap();
     let signature = (r, s);
-    verify_message(&pk, message, signature, &q);
+    validate_signature(&pk, message, signature, &q);
 }
 
